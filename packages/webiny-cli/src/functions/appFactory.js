@@ -3,11 +3,27 @@ const express = require("express");
 const get = require("lodash.get");
 const bodyParser = require("body-parser");
 const path = require("path");
+const { MongoClient } = require("mongodb");
 const listPackages = require("../utils/listPackages");
 const expressRequestToLambdaEvent = require("../utils/expressRequestToLambdaEvent");
 
+let client = null;
+async function createDatabase() {
+    const server = process.env.MONGODB_SERVER;
+    const databaseName = process.env.MONGODB_DB_NAME;
+
+    if (!client || !client.isConnected()) {
+        client = await MongoClient.connect(server, { useNewUrlParser: true });
+    }
+
+    return client.db(databaseName);
+}
+
 const getHandler = async ({ createHandler, handler }) => {
     return async (event, context) => {
+        context.database = await createDatabase();
+        context.jwtSecret = process.env.WEBINY_JWT_SECRET;
+
         if (typeof handler !== "function") {
             handler = await createHandler(context);
         }

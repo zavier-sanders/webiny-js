@@ -3,14 +3,14 @@
   "extensions": {
     "endpoints": {
       "Default Introspection Endpoint": {
-        "url": "http://localhost:9003/graphql",
+        "url": "http://localhost:9000/function/api",
         "introspect": true,
         "headers": {
           "user-agent": "JS GraphQL"
         }
       },
-      "Default (http://localhost:9003/graphql)": {
-        "url": "http://localhost:9003/graphql",
+      "Default (http://localhost:9000/function/api)": {
+        "url": "http://localhost:9000/function/api",
         "headers": {
           "user-agent": "JS GraphQL"
         }
