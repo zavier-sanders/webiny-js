@@ -8,7 +8,7 @@ export interface IRoles2Entities extends Entity {
     role: IRole;
 }
 
-export function roles2entitiesFactory(context: Object): Class<IRoles2Entities> {
+export function roles2entitiesFactory({ getEntity }: Object): Class<IRoles2Entities> {
     return class Roles2Entities extends Entity {
         static classId = "SecurityRoles2Entities";
 
@@ -19,13 +19,9 @@ export function roles2entitiesFactory(context: Object): Class<IRoles2Entities> {
         constructor() {
             super();
 
-            const {
-                security: { entities }
-            } = context;
-
             this.attr("entity").entity([], { classIdAttribute: "entityClassId" });
             this.attr("entityClassId").char();
-            this.attr("role").entity(entities.Role);
+            this.attr("role").entity(getEntity("SecurityRole"));
         }
     };
 }

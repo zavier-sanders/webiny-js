@@ -23,7 +23,7 @@ export interface IPage extends Entity {
 
 export const pageFactory = (context: Object): Class<IPage> => {
     return class Page extends Entity {
-        static classId = "CmsPage";
+        static classId = "PageBuilderPage";
 
         createdBy: string;
         updatedBy: string;
@@ -43,7 +43,7 @@ export const pageFactory = (context: Object): Class<IPage> => {
             super();
 
             const { getUser, getEntity } = context;
-            const Category = getEntity("CmsCategory");
+            const Category = getEntity("PageBuilderCategory");
 
             this.attr("category")
                 .entity(Category)
@@ -90,21 +90,21 @@ export const pageFactory = (context: Object): Class<IPage> => {
             this.attr("isHomePage")
                 .boolean()
                 .setDynamic(async () => {
-                    const settings = await context.cms.entities.Settings.load();
+                    const settings = await context.getEntity("PageBuilderSettings").load();
                     return settings.data.pages.home === this.parent;
                 });
 
             this.attr("isErrorPage")
                 .boolean()
                 .setDynamic(async () => {
-                    const settings = await context.cms.entities.Settings.load();
+                    const settings = await context.getEntity("PageBuilderSettings").load();
                     return settings.data.pages.error === this.parent;
                 });
 
             this.attr("isNotFoundPage")
                 .boolean()
                 .setDynamic(async () => {
-                    const settings = await context.cms.entities.Settings.load();
+                    const settings = await context.getEntity("PageBuilderSettings").load();
                     return settings.data.pages.notFound === this.parent;
                 });
 

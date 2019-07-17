@@ -1,92 +1,87 @@
 // @flow
-import { cmsSettingsFactory } from "webiny-api-cms/entities";
+import { resolveGetSettings, resolveSaveSettings } from "webiny-api/graphql";
 
-export default [
-    {
-        name: "schema-settings-cms",
-        type: "schema-settings",
-        namespace: "cms",
-        typeDefs: /* GraphQL */ `
-            type CmsSocialMedia {
-                facebook: String
-                twitter: String
-                instagram: String
-                image: File
-            }
+export default {
+    typeDefs: `
+        type PageBuilderSocialMedia {
+            facebook: String
+            twitter: String
+            instagram: String
+            image: File
+        }
 
-            type CmsSettings {
-                name: String
-                favicon: File
-                logo: File
-                domain: String
-                social: CmsSocialMedia
-                pages: CmsSettingsPages
-            }
+        type PageBuilderSettings {
+            name: String
+            favicon: File
+            logo: File
+            domain: String
+            social: PageBuilderSocialMedia
+            pages: PageBuilderSettingsPages
+        }
 
-            type CmsSettingsResponse {
-                error: Error
-                data: CmsSettings
-            }
+        type PageBuilderSettingsResponse {
+            error: PageBuilderError
+            data: PageBuilderSettings
+        }
 
-            type CmsSettingsPages {
-                home: ID
-                notFound: ID
-                error: ID
-            }
+        type PageBuilderSettingsPages {
+            home: ID
+            notFound: ID
+            error: ID
+        }
 
-            type CmsDefaultPage {
-                id: String
-                parent: String
-                title: String
-            }
+        type PageBuilderDefaultPage {
+            id: String
+            parent: String
+            title: String
+        }
 
-            input CmsSocialMediaInput {
-                facebook: String
-                twitter: String
-                instagram: String
-                image: FileInput
-            }
+        input PageBuilderSocialMediaInput {
+            facebook: String
+            twitter: String
+            instagram: String
+            image: RefInput
+        }
 
-            input CmsDefaultPageInput {
-                id: String
-                title: String
-            }
+        input PageBuilderDefaultPageInput {
+            id: String
+            title: String
+        }
 
-            input CmsSettingsInput {
-                name: String
-                favicon: FileInput
-                logo: FileInput
-                social: CmsSocialMediaInput
-                pages: CmsSettingsPagesInput
-            }
+        input PageBuilderSettingsInput {
+            name: String
+            favicon: RefInput
+            logo: RefInput
+            social: PageBuilderSocialMediaInput
+            pages: PageBuilderSettingsPagesInput
+        }
 
-            input CmsSettingsPagesInput {
-                home: ID
-                notFound: ID
-                error: ID
-            }
+        input PageBuilderSettingsPagesInput {
+            home: ID
+            notFound: ID
+            error: ID
+        }
 
-            extend type SettingsQuery {
-                cms: CmsSettingsResponse
-            }
+        extend type SettingsQuery {
+            cms: PageBuilderSettingsResponse
+        }
 
-            extend type SettingsMutation {
-                cms(data: CmsSettingsInput): CmsSettingsResponse
+        extend type SettingsMutation {
+            cms(data: PageBuilderSettingsInput): PageBuilderSettingsResponse
+        }
+    `,
+    resolvers: {
+        SettingsQuery: {
+            cms: (_: any, args: Object, ctx: Object, info: Object) => {
+                const entity = ctx.getEntity("PageBuilderSettings");
+                return resolveGetSettings(entity)(_, args, ctx, info);
             }
-        `,
-        entity: ({
-            cms: {
-                entities: { Settings }
+        },
+        SettingsMutation: {
+            cms: (_: any, args: Object, ctx: Object, info: Object) => {
+                const entity = ctx.getEntity("PageBuilderSettings");
+                return resolveSaveSettings(entity)(_, args, ctx, info);
             }
-        }: Object) => Settings
-    },
-    {
-        type: "entity",
-        name: "entity-cms-settings",
-        namespace: "cms",
-        entity: {
-            name: "Settings",
-            factory: cmsSettingsFactory
         }
     }
-];
+};

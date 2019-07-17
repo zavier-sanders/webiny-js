@@ -8,20 +8,16 @@ export interface Groups2Entities extends Entity {
     group: IGroup;
 }
 
-export function groups2entitiesFactory(context: Object) {
+export function groups2entitiesFactory({ getEntity }: Object) {
     return class Groups2Entities extends Entity {
         static classId = "SecurityGroups2Entities";
 
         constructor() {
             super();
 
-            const {
-                security: { entities }
-            } = context;
-
             this.attr("entity").entity([], { classIdAttribute: "entityClassId" });
             this.attr("entityClassId").char();
-            this.attr("group").entity(entities.Group);
+            this.attr("group").entity(getEntity("SecurityGroup"));
         }
     };
 }

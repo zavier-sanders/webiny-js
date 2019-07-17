@@ -16,8 +16,8 @@ import getErrorPage from "./pageResolvers/getErrorPage";
 import searchTags from "./pageResolvers/searchTags";
 import oembed from "./pageResolvers/oembed";
 
-const pageFetcher = ctx => ctx.cms.entities.Page;
-const elementFetcher = ctx => ctx.cms.entities.Element;
+const pageFetcher = ctx => ctx.getEntity("PageBuilderPage");
+const elementFetcher = ctx => ctx.getEntity("PageBuilderElement");
 
 export default {
     typeDefs: /* GraphQL*/ `

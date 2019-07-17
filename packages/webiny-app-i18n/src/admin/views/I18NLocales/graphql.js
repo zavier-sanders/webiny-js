@@ -14,7 +14,7 @@ export const loadI18NLocales = gql`
         $sort: JSON
         $page: Int
         $perPage: Int
-        $search: SearchInput
+        $search: PageBuilderSearchInput
     ) {
         i18n {
             i18NLocales: listI18NLocales(

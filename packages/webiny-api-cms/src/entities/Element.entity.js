@@ -9,18 +9,18 @@ export interface IElement extends Entity {
     content: Object;
     type: ElementType;
     category: ?string;
-    preview: Object;
+    preview: string;
 }
 
-export function elementFactory(context): Class<IElement> {
+export function elementFactory(context: Object): Class<IElement> {
     return class Element extends Entity {
-        static classId = "CmsElement";
+        static classId = "PageBuilderElement";
 
         name: string;
         content: Object;
         type: ElementType;
         category: ?string;
-        preview: Object;
+        preview: string;
 
         constructor() {
             super();
@@ -33,7 +33,7 @@ export function elementFactory(context): Class<IElement> {
                 .char()
                 .setValidators("required,in:element:block");
 
-            this.attr("preview").entity(context.files.entities.File);
+            this.attr("preview").char();
         }
     };
 }

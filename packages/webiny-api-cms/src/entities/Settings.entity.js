@@ -11,11 +11,11 @@ const createSocialMediaModel = context =>
             this.attr("facebook").char();
             this.attr("twitter").char();
             this.attr("instagram").char();
-            this.attr("image").entity(context.files.entities.File);
+            this.attr("image").char();
         }
     };
 
-class CmsSettingsPagesModel extends Model {
+class SettingsPagesModel extends Model {
     constructor() {
         super();
         // These are actually parents, not the ID of the actual page.
@@ -25,25 +25,25 @@ class CmsSettingsPagesModel extends Model {
     }
 }
 
-const createCmsSettingsModel = context => {
-    return class CmsSettingsModel extends EntityModel {
+const createPageBuilderSettingsModel = context => {
+    return class PageBuilderSettingsModel extends EntityModel {
         constructor() {
             super();
             this.setParentEntity(context.settings);
-            this.attr("pages").model(CmsSettingsPagesModel);
+            this.attr("pages").model(SettingsPagesModel);
             this.attr("name").char();
             this.attr("domain").char();
-            this.attr("favicon").entity(context.files.entities.File);
-            this.attr("logo").entity(context.files.entities.File);
+            this.attr("favicon").char();
+            this.attr("logo").char();
             this.attr("social").model(createSocialMediaModel(context));
         }
     };
 };
 
-export const cmsSettingsFactory = (context: Object) => {
-    return class CmsSettings extends settingsFactory(context) {
+export const pageBuilderSettingsFactory = (context: Object) => {
+    return class PageBuilderSettings extends settingsFactory(context) {
         static key = "cms";
-        static classId = "CmsSettings";
+        static classId = "PageBuilderSettings";
         static collectionName = "Settings";
 
         data: Object;
@@ -51,7 +51,7 @@ export const cmsSettingsFactory = (context: Object) => {
 
         constructor() {
             super();
-            this.attr("data").model(createCmsSettingsModel({ ...context, settings: this }));
+            this.attr("data").model(createPageBuilderSettingsModel({ ...context, settings: this }));
         }
     };
 };

@@ -15,7 +15,7 @@ export const loadCategories = gql`
         $sort: JSON
         $page: Int
         $perPage: Int
-        $search: SearchInput
+        $search: PageBuilderSearchInput
     ) {
         cms {
             pageBuilder {
@@ -65,7 +65,7 @@ export const loadCategory = gql`
 `;
 
 export const createCategory = gql`
-    mutation CreateCategory($data: CategoryInput!){
+    mutation CreateCategory($data: PageBuilderCategoryInput!){
         cms {
             pageBuilder {
                 category: createCategory(data: $data) {
@@ -84,7 +84,7 @@ export const createCategory = gql`
 `;
 
 export const updateCategory = gql`
-    mutation UpdateCategory($id: ID!, $data: CategoryInput!){
+    mutation UpdateCategory($id: ID!, $data: PageBuilderCategoryInput!){
         cms {
             pageBuilder {
                 category: updateCategory(id: $id, data: $data) {

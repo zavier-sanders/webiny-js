@@ -23,10 +23,7 @@ export function groupFactory(context: Object): Class<IGroup> {
         constructor() {
             super();
 
-            const {
-                user = {},
-                security: { entities }
-            } = context;
+            const { user = {}, getEntity } = context;
 
             this.attr("createdBy")
                 .char()
@@ -43,8 +40,8 @@ export function groupFactory(context: Object): Class<IGroup> {
             this.attr("system").boolean();
 
             this.attr("roles")
-                .entities(entities.Role, "entity")
-                .setUsing(entities.Roles2Entities, "role");
+                .entities(getEntity("SecurityRole"), "entity")
+                .setUsing(getEntity("SecurityRoles2Entities"), "role");
 
             this.on("beforeCreate", async () => {
                 const existingGroup = await Group.findOne({ query: { slug: this.slug } });

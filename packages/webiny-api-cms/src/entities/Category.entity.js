@@ -10,7 +10,7 @@ export interface ICategory extends Entity {
 
 export function categoryFactory(): Class<ICategory> {
     return class Category extends Entity {
-        static classId = "CmsCategory";
+        static classId = "PageBuilderCategory";
 
         name: string;
         slug: string;

@@ -7,4 +7,4 @@ export { menuFactory } from "webiny-api-cms/entities/Menu.entity";
 export type { IMenu } from "webiny-api-cms/entities/Menu.entity";
 export { pageFactory } from "webiny-api-cms/entities/Page.entity";
 export type { IPage } from "webiny-api-cms/entities/Page.entity";
-export { cmsSettingsFactory } from "webiny-api-cms/entities/CmsSettings.entity";
+export { pageBuilderSettingsFactory } from "webiny-api-cms/entities/Settings.entity";
