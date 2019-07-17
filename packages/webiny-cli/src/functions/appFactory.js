@@ -6,8 +6,9 @@ const path = require("path");
 const { MongoClient } = require("mongodb");
 const listPackages = require("../utils/listPackages");
 const expressRequestToLambdaEvent = require("../utils/expressRequestToLambdaEvent");
+const createDatabase = require("../database");
 
-let client = null;
+/*let client = null;
 async function createDatabase() {
     const server = process.env.MONGODB_SERVER;
     const databaseName = process.env.MONGODB_DB_NAME;
@@ -17,11 +18,14 @@ async function createDatabase() {
     }
 
     return client.db(databaseName);
-}
+}*/
 
 const getHandler = async ({ createHandler, handler }) => {
     return async (event, context) => {
-        context.database = await createDatabase();
+        const server = process.env.MONGODB_SERVER;
+        const databaseName = process.env.MONGODB_DB_NAME;
+
+        context.database = await createDatabase({ server, databaseName });
         context.jwtSecret = process.env.WEBINY_JWT_SECRET;
 
         if (typeof handler !== "function") {

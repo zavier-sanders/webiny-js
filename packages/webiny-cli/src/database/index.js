@@ -1,107 +1,178 @@
-// @flow
-const { MongoClient } = require("mongodb");
+import fetch from "cross-fetch";
+import { EJSON } from "bson";
 
-const dbInstances = {};
-async function getDatabase({ server, databaseName }) {
-    if (!process.env.CACHE_DB) {
-        console.log("Create DB connection...");
-        // Create a new DB connection
-        const client = await MongoClient.connect(server, { useNewUrlParser: true });
-        return client.db(databaseName);
+class MongoHttpOperationAggregate {
+    _params = [];
+
+    constructor({ client, collection, params }) {
+        this.client = client;
+        this._collection = collection;
+        this._params = params;
     }
 
-    if (!dbInstances[databaseName]) {
-        console.log("Create DB connection and cache it...");
-        const client = await MongoClient.connect(server, { useNewUrlParser: true });
-        dbInstances[databaseName] = client.db(databaseName);
+    toArray() {
+        return this.client.execute({
+            collection: this._collection,
+            operation: {
+                name: "aggregate",
+                params: this._params
+            }
+        });
     }
-
-    console.log("Return DB connection from cache...");
-    return dbInstances[databaseName];
 }
 
-function FindCursor(collection: Object, ...args) {
-    this._limit = 0;
-    this._skip = 0;
-    this._sort = null;
+class MongoHttpOperationFind {
+    _params = [];
+    _limit = 0;
+    _skip = 0;
+    _sort = null;
 
-    this.limit = (value: number) => {
+    constructor({ client, collection, params }) {
+        this.client = client;
+        this._collection = collection;
+        this._params = params;
+    }
+
+    limit(value) {
         this._limit = value;
         return this;
-    };
+    }
 
-    this.skip = (value: number) => {
+    skip(value) {
         this._skip = value;
         return this;
-    };
+    }
 
-    this.sort = (value: { [string]: number }) => {
+    sort(value) {
         this._sort = value;
         return this;
-    };
+    }
 
-    this.toArray = async () => {
-        return await collection
-            .find(...args)
-            .limit(this._limit)
-            .skip(this._skip)
-            .sort(this._sort)
-            .toArray();
-    };
+    toArray() {
+        return this.client.execute({
+            collection: this._collection,
+            operation: {
+                name: "find",
+                params: this._params
+            },
+            limit: this._limit,
+            skip: this._skip,
+            sort: this._sort
+        });
+    }
 }
 
-const Aggregation = function(collection: Object, ...args) {
-    this.toArray = async () => {
-        return await collection.aggregate(...args).toArray();
-    };
-};
+class MongoHttpCollection {
+    constructor(client, name) {
+        this.name = name;
+        this.client = client;
+    }
 
-module.exports.getDatabase = async ({
-                                        server,
-                                        databaseName
-                                    }: {
-    server: string,
-    databaseName: string
-}) => {
-    const db = await getDatabase({ server, databaseName });
+    find(...args) {
+        return new MongoHttpOperationFind({
+            client: this.client,
+            params: args,
+            collection: this.name
+        });
+    }
+    findOne(...args) {
+        return this.client.execute({
+            collection: this.name,
+            operation: { name: "findOne", params: args }
+        });
+    }
+    insert(...args) {
+        return this.client.execute({
+            collection: this.name,
+            operation: { name: "insert", params: args }
+        });
+    }
+    insertOne(...args) {
+        return this.client.execute({
+            collection: this.name,
+            operation: { name: "insertOne", params: args }
+        });
+    }
+    insertMany(...args) {
+        return this.client.execute({
+            collection: this.name,
+            operation: { name: "insertMany", params: args }
+        });
+    }
+    updateMany(...args) {
+        return this.client.execute({
+            collection: this.name,
+            operation: { name: "updateMany", params: args }
+        });
+    }
+    updateOne(...args) {
+        return this.client.execute({
+            collection: this.name,
+            operation: { name: "updateOne", params: args }
+        });
+    }
+    deleteOne(...args) {
+        return this.client.execute({
+            collection: this.name,
+            operation: { name: "deleteOne", params: args }
+        });
+    }
+    deleteMany(...args) {
+        return this.client.execute({
+            collection: this.name,
+            operation: { name: "deleteMany", params: args }
+        });
+    }
+    aggregate(...args) {
+        return new MongoHttpOperationAggregate({
+            client: this.client,
+            params: args,
+            collection: this.name
+        });
+    }
+    countDocuments(...args) {
+        return this.client.execute({
+            collection: this.name,
+            operation: { name: "countDocuments", params: args }
+        });
+    }
+}
 
-    return {
-        collection: (name: string) => {
-            return {
-                find: (...args: Array<any>) => {
-                    return new FindCursor(db.collection(name), ...args);
-                },
-                findOne: async (...args: Array<any>) => {
-                    return db.collection(name).findOne(...args);
-                },
-                insert: async (...args: Array<any>) => {
-                    return db.collection(name).insert(...args);
-                },
-                insertOne: async (...args: Array<any>) => {
-                    return db.collection(name).insertOne(...args);
-                },
-                insertMany: async (...args: Array<any>) => {
-                    return db.collection(name).insertMany(...args);
-                },
-                updateMany: async (...args: Array<any>) => {
-                    return db.collection(name).updateMany(...args);
-                },
-                updateOne: async (...args: Array<any>) => {
-                    return db.collection(name).updateOne(...args);
-                },
-                deleteOne: async (...args: Array<any>) => {
-                    return db.collection(name).deleteOne(...args);
-                },
-                deleteMany: async (...args: Array<any>) => {
-                    return db.collection(name).deleteMany(...args);
-                },
-                aggregate: (...args: Array<any>) => {
-                    return new Aggregation(db.collection(name), ...args);
-                },
-                countDocuments: async (...args: Array<any>) => {
-                    return db.collection(name).countDocuments(...args);
-                }
-            };
+class MongoHttpClient {
+    constructor({ server, databaseName }) {
+        this.server = server;
+        this.databaseName = databaseName;
+    }
+
+    async execute(query) {
+        try {
+            const payload = EJSON.stringify({
+                query,
+                database: { server: this.server, name: this.databaseName }
+            });
+
+            const res = await fetch(process.env.MONGO_HTTP_SERVER, {
+                method: "post",
+                body: payload,
+                headers: { "Content-Type": "application/json" }
+            });
+
+            if (res.status >= 400) {
+                throw new Error("Bad response from server");
+            }
+
+            const data = await res.text();
+            return EJSON.parse(data).result;
+        } catch (err) {
+            console.log("MongoHttpClient error", err);
         }
-    };
+    }
+
+    collection(name) {
+        return new MongoHttpCollection(this, name);
+    }
+}
+
+module.exports = async ({ server, databaseName }) => {
+    return new MongoHttpClient({ server, databaseName });
 };
