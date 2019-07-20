@@ -94,7 +94,9 @@ export const listPublishedPages = async ({ args, Page, Category }: Object) => {
 };
 
 export default async (root: any, args: Object, context: Object) => {
-    const { Page, Category } = context.cms.entities;
+    const Page = context.getEntity("PageBuilderPage");
+    const Category = context.getEntity("PageBuilderCategory");
+
     const data = await listPublishedPages({ args, Page, Category });
     return new ListResponse(data, data.getMeta());
 };

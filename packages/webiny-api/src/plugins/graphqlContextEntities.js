@@ -21,7 +21,7 @@ const graphqlContextEntities: GraphQLContextPluginType = {
         };
 
         context.getEntity = name => {
-            return context.getEntities()[name];
+            return context.entities[name];
         };
 
         getPlugins("entity").forEach((plugin: EntityPluginType) => {
