@@ -57,7 +57,20 @@ module.exports = async ({ port, watch, inspect }) => {
                 aggregateTimeout: 300,
                 poll: 1000
             },
-            () => {
+            (err, multiStats) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+
+                multiStats.stats.forEach(stats => {
+                    console.log(
+                        stats.toString({
+                            colors: true
+                        })
+                    );
+                });
+
                 if (!firstRun) {
                     return;
                 }

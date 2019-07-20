@@ -2,7 +2,7 @@
 import "source-map-support/register";
 import { registerPlugins } from "webiny-plugins";
 import { createHandler as createBaseHandler } from "webiny-api";
-import createConfig from "./configs";
+import createConfig from "api-service-config";
 import plugins from "./plugins";
 
 registerPlugins(plugins);

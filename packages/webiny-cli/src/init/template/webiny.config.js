@@ -1,14 +1,30 @@
+const sharedEnv = {
+    MONGODB_SERVER: process.env.MONGODB_SERVER,
+    MONGODB_DB_NAME: process.env.MONGODB_DB_NAME,
+    WEBINY_JWT_SECRET: process.env.WEBINY_JWT_SECRET
+};
+
 module.exports = {
     functions: {
-        api: {
-            install: "src/install.js",
+        "api-gateway": {
             method: "ALL",
             path: "/function/api",
-            env: {
-                MONGODB_SERVER: process.env.MONGODB_SERVER,
-                MONGODB_DB_NAME: process.env.MONGODB_DB_NAME,
-                WEBINY_JWT_SECRET: process.env.WEBINY_JWT_SECRET
-            }
+            env: sharedEnv
+        },
+        "api-service-page-builder": {
+            method: "ALL",
+            path: "/function/page-builder",
+            env: sharedEnv
+        },
+        "api-service-security": {
+            method: "ALL",
+            path: "/function/security",
+            env: sharedEnv
+        },
+        "api-service-files": {
+            method: "ALL",
+            path: "/function/files",
+            env: sharedEnv
         }
     },
     apps: {

@@ -80,7 +80,11 @@ module.exports = async () => {
 
     // Setup monorepo packages
     await setupFolder("packages/admin");
-    await setupFolder("packages/api");
+    await setupFolder("packages/api-gateway");
+    await setupFolder("packages/api-service-config");
+    await setupFolder("packages/api-service-files");
+    await setupFolder("packages/api-service-page-builder");
+    await setupFolder("packages/api-service-security");
     await setupFolder("packages/site");
     await setupFolder("packages/theme");
     await setupFolder("packages/webiny-rewire");
