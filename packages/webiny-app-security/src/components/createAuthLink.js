@@ -22,8 +22,10 @@ export default ({ token = "webiny-token" }: { token: string } = {}) => {
                 next: data => {
                     if (data.errors) {
                         data.errors.forEach(error => {
-                            if (unsetTokenCodes.includes(error.code)) {
+                            const code = error.code || error.extensions.exception.code;
+                            if (unsetTokenCodes.includes(code)) {
                                 localStorage.remove(token);
+                                data.errors = [];
                             }
                         });
                     }
