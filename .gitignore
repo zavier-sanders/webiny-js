@@ -11,9 +11,9 @@ node_modules
 .DS_Store
 coverage
 yarn-error.log
-dist/
+# dist/
 lib/
-build/
+# build/
 .files/
 .changelog
 .verdaccio
