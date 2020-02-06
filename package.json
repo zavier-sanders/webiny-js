@@ -119,13 +119,15 @@
     "wby:fns": "cross-env NODE_ENV=development sls offline start --stage=local",
     "wby:fns:inspect": "yarn wby:fns --inspect=9001"
   },
-  "pre-commit": [
-    "lint-staged",
+  "precommit": [
     "build:components",
     "build:apps",
     "build:api",
     "build:packages",
     "build:@webiny"
+  ],
+  "pre-commit": [
+    "lint-staged"
   ],
   "lint-staged": {
     "**/*.js": [
