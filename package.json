@@ -120,7 +120,12 @@
     "wby:fns:inspect": "yarn wby:fns --inspect=9001"
   },
   "pre-commit": [
-    "lint-staged"
+    "lint-staged",
+    "build:components",
+    "build:apps",
+    "build:api",
+    "build:packages",
+    "build:@webiny"
   ],
   "lint-staged": {
     "**/*.js": [
